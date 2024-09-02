@@ -5,6 +5,15 @@ import subprocess
 def load_font(font_path):
     ctypes.windll.gdi32.AddFontResourceW(font_path)
 
+def winfile():
+    subprocess.Popen("assets\\programs\\winfile64.exe")
+
+def restart():
+    subprocess.Popen("assets\\programs\\restart.exe")
+
+def retask():
+    subprocess.Popen("assets\\programs\\retask.exe")
+
 def doall_window():
     def passyn():
         if wifipassyn.get():
@@ -93,15 +102,33 @@ def wificonnect_window():
 
 
 
-# Thanks Reddit!!!
-def persinfo_window():
-    persinfo = tk.Toplevel(root)
-    persinfo.title("Persistence Info")
-    text_content = (
-        "Enabling Persistence makes a copy of these files onto your X: drive so that it is easier to access. This makes it so that when you boot up WindowsRE, type `refi run` and it will automatically enable your network. You can also just type `refi` to open up the helper, then select load drivers, then reload profile."
-    )
-    label = tk.Label(persinfo, text=text_content, font=("Carter One", 15), wraplength=480)
-    label.pack()
+def pers_window():
+    def persinfo_window():
+        branch = tk.Toplevel(root)
+        branch.title("Persistence Info")
+        text_content = (
+            "Enabling Persistence makes a copy of these files onto your X: drive so that it is easier to access. This makes it so that when you boot up WindowsRE, type `refi-run` and it will automatically enable your network. You can also just type `refi` to open up the helper, then select load drivers, then reload profile."
+        )
+        label = tk.Label(branch, text=text_content, font=("Carter One", 15), wraplength=480)
+        label.pack()
+    def add():
+        subprocess.run(["assets\\make_persis.bat"])
+        branch.destroy()
+    def rem():
+        subprocess.run(["assets\\rem_persis.bat"])
+        branch.destroy()
+    branch = tk.Toplevel(root)
+    branch.title("Persistence Settings")
+    perstitle = tk.Label(branch, text="Add or Remove Persistence", font=("Carter One", 15))
+    perstitle.pack()
+    addremfrm = tk.Frame(branch)
+    addremfrm.pack()
+    addpers = tk.Button(addremfrm, text="Add Persistence", font=("Carter One", 12), fg="red", command=add)
+    addpers.pack(side="left")
+    rempers = tk.Button(addremfrm, text="Remove Persistenct", font=("Carter One", 12), fg="green", command=rem)
+    rempers.pack(side="left")
+    pers_infobutton = tk.Button(addremfrm, text="Persistance Info", fg="brown", font=("Carter One", 12), command=persinfo_window)
+    pers_infobutton.pack(side="left")
 
 def drivers():
     subprocess.run(["assets\\drivers.bat"])
@@ -111,7 +138,7 @@ def reprof():
 
 
 root = tk.Tk()
-root.geometry("700x200")
+root.geometry("725x200")
 
 load_font("assets/CarterOne-Regular.ttf")
 
@@ -131,7 +158,7 @@ drivers_start = tk.Button(buttonfrm, text="Enable Network Services", fg="green",
 drivers_start.pack(side="left")
 change_start = tk.Button(buttonfrm, text="Change WiFi Connection", fg="blue", font=("Carter One", 12), command=wificonnect_window)
 change_start.pack(side="left")
-reprof_start = tk.Button(buttonfrm, text="Reload Profile", fg="cyan", font=("Carter One", 12), command=reprof)
+reprof_start = tk.Button(buttonfrm, text="Reload Profile", fg="brown", font=("Carter One", 12), command=reprof)
 reprof_start.pack(side="left")
 
 extras_label = tk.Label(root, text = "Extras", font=("Carter One", 15))
@@ -139,9 +166,13 @@ extras_label.pack()
 
 extras = tk.Frame(root)
 extras.pack()
-pers_startbutton = tk.Button(extras, text="Persistance Settings", fg="purple", font=("Carter One", 12), command=persinfo_window)
+pers_startbutton = tk.Button(extras, text="Persistance Settings", fg="red", font=("Carter One", 12), command=pers_window)
 pers_startbutton.pack(side="left")
-pers_infobutton = tk.Button(extras, text="Persistance Info", fg="brown", font=("Carter One", 12), command=persinfo_window)
-pers_infobutton.pack(side="left")
+winfile_startbutton = tk.Button(extras, text="WinFile", fg="purple", font=("Carter One", 12), command=winfile)
+winfile_startbutton.pack(side="left")
+restart_startbutton = tk.Button(extras, text="REstart", fg="maroon", font=("Carter One", 12), command=restart)
+restart_startbutton.pack(side="left")
+restask_startbutton = tk.Button(extras, text="REtask", fg="brown", font=("Carter One", 12), command=retask)
+restask_startbutton.pack(side="left")
 
 root.mainloop()

@@ -9,7 +9,7 @@ if %errorlevel% neq 0 (
     exit /b
 )
 echo Installing Wi-Fi Driver...
-pnputil /add-driver 10-11/netwtw08.inf /install
+pnputil /add-driver drivers/netwtw08.inf /install
 
 REM Ask for Wi-Fi details
 set /p ssid="Enter your Wi-Fi SSID: "

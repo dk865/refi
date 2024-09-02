@@ -11,11 +11,23 @@ if %errorlevel% neq 0 (
 echo Installing Wi-Fi Driver...
 pnputil /add-driver drivers/netwtw08.inf /install
 
-REM Ask for Wi-Fi details
-set /p ssid="Enter your Wi-Fi SSID: "
+set /p ssid="Enter your Wi-Fi Name or SSID: "
+
+:yn
+set /p yn="Does you WiFI Connection have a Password? (y/n): "
+if "%yn%" == "y" {
+    goto pass
+} else if "%yn%" == "n" {
+    goto nopass
+} else {
+    echo "Invalid Option. (Case Sensitive)"
+    goto yn
+}
+
+:pass
+
 set /p password="Enter your Wi-Fi password: "
 
-REM Create Wi-Fi Profile XML file
 set profile_path=%~dp0wifi-profile.xml
 echo Creating Wi-Fi profile XML file...
 echo ^<?xml version="1.0"?^> > "%profile_path%"
@@ -43,8 +55,35 @@ echo             ^</sharedKey^> >> "%profile_path%"
 echo         ^</security^> >> "%profile_path%"
 echo     ^</MSM^> >> "%profile_path%"
 echo ^</WLANProfile^> >> "%profile_path%"
+goto import
 
-REM Import the Wi-Fi Profile
+
+:nopass
+set profile_path=%~dp0wifi-profile.xml
+echo Creating Wi-Fi profile XML file for open network...
+echo ^<?xml version="1.0"?^> > "%profile_path%"
+echo ^<WLANProfile xmlns="http://www.microsoft.com/networking/WLAN/profile/v1"^> >> "%profile_path%"
+echo     ^<name^>%ssid%^</name^> >> "%profile_path%"
+echo     ^<SSIDConfig^> >> "%profile_path%"
+echo         ^<SSID^> >> "%profile_path%"
+echo             ^<name^>%ssid%^</name^> >> "%profile_path%"
+echo         ^</SSID^> >> "%profile_path%"
+echo     ^</SSIDConfig^> >> "%profile_path%"
+echo     ^<connectionType^>ESS^</connectionType^> >> "%profile_path%"
+echo     ^<connectionMode^>auto^</connectionMode^> >> "%profile_path%"
+echo     ^<MSM^> >> "%profile_path%"
+echo         ^<security^> >> "%profile_path%"
+echo             ^<authEncryption^> >> "%profile_path%"
+echo                 ^<authentication^>open^</authentication^> >> "%profile_path%"
+echo                 ^<encryption^>none^</encryption^> >> "%profile_path%"
+echo             ^</authEncryption^> >> "%profile_path%"
+echo         ^</security^> >> "%profile_path%"
+echo     ^</MSM^> >> "%profile_path%"
+echo ^</WLANProfile^> >> "%profile_path%"
+goto import
+
+
+:import
 echo Importing Wi-Fi profile...
 netsh wlan add profile filename="%profile_path%"
 if %errorlevel% neq 0 (
@@ -53,7 +92,6 @@ if %errorlevel% neq 0 (
     exit /b
 )
 
-REM Connect to Wi-Fi
 echo Connecting to Wi-Fi network %ssid%...
 netsh wlan connect name="%ssid%"
 if %errorlevel% neq 0 (
